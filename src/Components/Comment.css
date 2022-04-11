@@ -1,0 +1,9 @@
+.box{
+    display: flex;
+    justify-content: space-around;
+    border: 3px red solid
+}
+.boxOne{
+    border: 3px rebeccapurple solid;
+    margin: 0.8rem;
+}
