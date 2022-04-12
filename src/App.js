@@ -4,20 +4,45 @@ import "./App.css";
 import Comment from "./Components/Comment";
 import FullComment from "./Components/FullComment";
 import NewComment from "./Components/NewComment";
-import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import http from "./Services/httpServices";
 
 function App() {
   const [comment, setComment] = useState(null);
-  const [fullComment, setFullComment] = useState([]);
+  const [fullComment, setFullComment] = useState(null);
 
   const clickHandler = (id) => {
-    console.log("id:" + id);
-    const set = comment.filter((i) => {
-      return i.id === id;
-    });
-    setFullComment(set);
+    // console.log("id:" + id);
+    // const set = comment.filter((i) => {
+    //   return i.id === id;
+    // });
+    // setFullComment(set);
+    setFullComment(id);
   };
 
+  const deleteHandler = () => {
+    http
+      .delete(`/comments/${fullComment}`)
+      .then((res) => {
+        http.get("/comments").then((res) => {
+          setComment(res.data);
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const submitHandlerNewComment = (newComment) => {
+    http
+      .post("/comments", newComment)
+      .then((res) =>
+        http.get("/comments").then((res) => {
+          setComment(res.data);
+        })
+      )
+      .catch((err) => console.log(err));
+  };
+
+  console.log(comment);
   useEffect(() => {
     // هندل کردن با تن و کش
     // axios
@@ -32,13 +57,12 @@ function App() {
     // هندل کردن با ایسینگ اویت
     const getComment = async () => {
       try {
-        const allData = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts"
-        );
+        const allData = await http.get("/comments");
+        toast.success("Hello Milad");
 
-        setComment(allData.data.slice(0, 4));
+        setComment(allData.data);
       } catch (error) {
-        console.log(error);
+        toast.error("server madarkharabe!!.");
       }
     };
     getComment();
@@ -47,6 +71,7 @@ function App() {
   console.log(fullComment);
   return (
     <div className="App">
+      <Toaster />
       <section className="boxTwo">
         {comment ? (
           comment.map((i) => {
@@ -63,8 +88,8 @@ function App() {
           <h3>Loding...</h3>
         )}
       </section>
-      <FullComment fullComment={fullComment} />
-      <NewComment />
+      <FullComment fullComment={fullComment} deleteHandler={deleteHandler} />
+      <NewComment submitHandlerNewComment={submitHandlerNewComment} />
     </div>
   );
 }
