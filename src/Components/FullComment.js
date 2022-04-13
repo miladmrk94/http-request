@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from "react";
-import http from "./../Services/httpServices";
-
-const FullComment = ({ fullComment, deleteHandler }) => {
-  const [comment, setComment] = useState(null);
-
-  const clickHandler = () => {
-    deleteHandler();
-    setComment(null);
-  };
-
-  useEffect(() => {
-    if (fullComment) {
-      const getFullComment = async () => {
-        const { data } = await http.get(`comments/${fullComment}`);
-        setComment(data);
-      };
-      getFullComment();
-    }
-  }, [fullComment]);
-
-  const renderComment = () => {
-    if (comment) {
+import React from "react";
+const FullComment = ({ showFullData, onClickForDelete }) => {
+  const showData = () => {
+    if (showFullData) {
       return (
-        <div key={comment.id}>
-          <h3>{comment.id}</h3>
-          <h3>{comment.body}</h3>
-          <button onClick={clickHandler}>Delete</button>
-        </div>
+        <>
+          <h1>{showFullData.name}</h1>
+          <h4>{showFullData.title}</h4>
+          <button onClick={() => onClickForDelete(showFullData.id)}>
+            Delete
+          </button>
+        </>
       );
-    } else {
-      return <h3>chose Comment</h3>;
     }
+    return <h2>chose a user</h2>;
   };
 
-  return <div className="boxOne">{renderComment()}</div>;
+  return <div>{showData()}</div>;
 };
 
 export default FullComment;

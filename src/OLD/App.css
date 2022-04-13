@@ -1,0 +1,7 @@
+.App {
+  text-align: center;
+}
+.boxTwo{
+  display: flex;
+  justify-content: center;
+}

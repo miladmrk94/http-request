@@ -1,12 +1,10 @@
 import React from "react";
 import "./Comment.css";
-const Comment = ({ name, email, onClick }) => {
+const Comment = ({ name, phone, onClick }) => {
   return (
-    <div className="box" onClick={onClick}>
-      <div className="boxOne">
-        <h3>{name}</h3>
-        <h3>{email}</h3>
-      </div>
+    <div className="boxTwo" onClick={onClick}>
+      <h2>{name}</h2>
+      <h3>{phone}</h3>
     </div>
   );
 };

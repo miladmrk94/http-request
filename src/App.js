@@ -1,97 +1,79 @@
-import React, { useState, useEffect } from "react";
-
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "./App.css";
+import AddComment from "./Components/AddComment";
 import Comment from "./Components/Comment";
 import FullComment from "./Components/FullComment";
-import NewComment from "./Components/NewComment";
-import toast, { Toaster } from "react-hot-toast";
-import http from "./Services/httpServices";
 
-function App() {
-  const [comment, setComment] = useState(null);
-  const [fullComment, setFullComment] = useState(null);
+const App = () => {
+  const [data, setData] = useState(null);
+  const [showFullData, setShowFullData] = useState(null);
 
   const clickHandler = (id) => {
-    // console.log("id:" + id);
-    // const set = comment.filter((i) => {
-    //   return i.id === id;
-    // });
-    // setFullComment(set);
-    setFullComment(id);
+    console.log("clicked:", id);
+    axios
+      .get(`http://localhost:3002/comments/${id}`)
+      .then((res) => {
+        setShowFullData(res.data);
+      })
+      .catch();
   };
 
-  const deleteHandler = () => {
-    http
-      .delete(`/comments/${fullComment}`)
-      .then((res) => {
-        http.get("/comments").then((res) => {
-          setComment(res.data);
-        });
+  const deleteHandler = (id) => {
+    axios
+      .delete(`http://localhost:3002/comments/${id}`)
+      .then(() => {
+        axios
+          .get("http://localhost:3002/comments")
+          .then((res) => {
+            setData(res.data);
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
+    console.log("hi");
   };
 
-  const submitHandlerNewComment = (newComment) => {
-    http
-      .post("/comments", newComment)
-      .then((res) =>
-        http.get("/comments").then((res) => {
-          setComment(res.data);
-        })
-      )
-      .catch((err) => console.log(err));
-  };
-
-  console.log(comment);
   useEffect(() => {
-    // هندل کردن با تن و کش
-    // axios
-    //   .get("https://jsonplaceholder.typicode.com/posts")
-    //   .then((res) => {
-    //     setComment(res.data.slice(0, 4));
-    //   })
-    //   .catch((eer) => {
-    //     console.log(eer);
-    //   });
-
-    // هندل کردن با ایسینگ اویت
-    const getComment = async () => {
-      try {
-        const allData = await http.get("/comments");
-        toast.success("Hello Milad");
-
-        setComment(allData.data);
-      } catch (error) {
-        toast.error("server madarkharabe!!.");
-      }
-    };
-    getComment();
+    axios
+      .get("http://localhost:3002/comments")
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
-  console.log(fullComment);
   return (
-    <div className="App">
-      <Toaster />
-      <section className="boxTwo">
-        {comment ? (
-          comment.map((i) => {
+    <div className="box">
+      <div className="divs">
+        {data ? (
+          data.map((i) => {
             return (
               <Comment
                 key={i.id}
-                name={i.title}
-                email={i.id}
+                name={i.name}
+                phone={i.phone}
                 onClick={() => clickHandler(i.id)}
               />
             );
           })
         ) : (
-          <h3>Loding...</h3>
+          <h2>Loding...</h2>
         )}
-      </section>
-      <FullComment fullComment={fullComment} deleteHandler={deleteHandler} />
-      <NewComment submitHandlerNewComment={submitHandlerNewComment} />
+      </div>
+      <div className="divs">
+        <FullComment
+          showFullData={showFullData}
+          onClickForDelete={deleteHandler}
+        />
+      </div>
+      <div className="divs">
+        <AddComment />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
