@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import AddComment from "./Components/AddComment";
 import Comment from "./Components/Comment";
 import FullComment from "./Components/FullComment";
+import http from "./Components/Services/httpServices";
 
 const App = () => {
   const [data, setData] = useState(null);
@@ -11,20 +11,15 @@ const App = () => {
 
   const clickHandler = (id) => {
     console.log("clicked:", id);
-    axios
-      .get(`http://localhost:3002/comments/${id}`)
-      .then((res) => {
-        setShowFullData(res.data);
-      })
-      .catch();
+    setShowFullData(id);
   };
 
-  const deleteHandler = (id) => {
-    axios
-      .delete(`http://localhost:3002/comments/${id}`)
+  const deleteHandler = () => {
+    http
+      .delete(`comments/${showFullData}`)
       .then(() => {
-        axios
-          .get("http://localhost:3002/comments")
+        http
+          .get("comments")
           .then((res) => {
             setData(res.data);
           })
@@ -34,9 +29,22 @@ const App = () => {
     console.log("hi");
   };
 
+  const onSubmitHandler = (newData) => {
+    http
+      .post("/comments", newData)
+      .then((res) => {
+        http
+          .get("/comments")
+          .then((res) => {
+            setData(res.data);
+          })
+          .catch();
+      })
+      .catch();
+  };
   useEffect(() => {
-    axios
-      .get("http://localhost:3002/comments")
+    http
+      .get("/comments")
       .then((res) => {
         setData(res.data);
       })
@@ -70,7 +78,7 @@ const App = () => {
         />
       </div>
       <div className="divs">
-        <AddComment />
+        <AddComment onSubmitHandler={onSubmitHandler} />
       </div>
     </div>
   );

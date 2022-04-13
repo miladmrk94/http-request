@@ -1,21 +1,42 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 const FullComment = ({ showFullData, onClickForDelete }) => {
-  const showData = () => {
-    if (showFullData) {
-      return (
-        <>
-          <h1>{showFullData.name}</h1>
-          <h4>{showFullData.title}</h4>
-          <button onClick={() => onClickForDelete(showFullData.id)}>
-            Delete
-          </button>
-        </>
-      );
-    }
-    return <h2>chose a user</h2>;
+  console.log(showFullData, "=id");
+  const [checkData, setCheckData] = useState(null);
+
+  const onClick = () => {
+    onClickForDelete();
+    setCheckData(null);
   };
 
-  return <div>{showData()}</div>;
+  useEffect(() => {
+    console.log(showFullData, "EEE");
+    if (showFullData) {
+      const myData = async () => {
+        await axios
+          .get(`/comments/${showFullData}`)
+          .then((res) => {
+            setCheckData(res.data);
+          })
+          .catch((err) => console.log(err));
+      };
+      myData();
+    }
+  }, [showFullData]);
+
+  return (
+    <div>
+      {checkData ? (
+        <div key={checkData.id}>
+          <h1>{checkData.name}</h1>
+          <h4>{checkData.title}</h4>
+          <button onClick={onClick}>Delete</button>
+        </div>
+      ) : (
+        <h2>chose a user</h2>
+      )}
+    </div>
+  );
 };
 
 export default FullComment;

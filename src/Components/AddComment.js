@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-const AddComment = () => {
-  const [newData, setNewData] = useState("");
+const AddComment = ({ onSubmitHandler }) => {
+  const [newData, setNewData] = useState(null);
 
   const changeHandler = (e) => {
     setNewData({ ...newData, [e.target.name]: e.target.value });
@@ -8,12 +8,14 @@ const AddComment = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log(newData);
-    e.target.reset();
-    if (newData === "") {
-      alert("plz completed");
+
+    if (newData) {
+      console.log(newData);
+      onSubmitHandler(newData);
+      e.target.reset();
+      setNewData(null);
     } else {
-      setNewData("");
+      alert("plz complete");
     }
   };
   return (
